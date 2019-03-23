@@ -122,6 +122,10 @@ cv2.rectangle(lenaImage, (206, 200), (365, 395), (0, 255, 0), 1)
 cv2.circle(lenaImage, (264, 271), 20, (255, 0, 0), 1)
 cv2.circle(lenaImage, (337, 272), 20, (255, 0, 0), 1)
 
+font = cv2.FONT_HERSHEY_SIMPLEX
+
+cv2.putText(lenaImage, 'Lena', (10, 500), font, 4, (0, 0, 255), 2, cv2.LINE_AA)
+
 cv2.imshow('image', lenaImage)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
