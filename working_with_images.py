@@ -1,7 +1,6 @@
 import os
 import cv2
 from matplotlib import pyplot as plt
-import numpy as np
 
 # read in an image
 lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_COLOR)
@@ -93,10 +92,38 @@ cv2.imshow(' adaptive equalized', cl1)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
 
-# resize image
-
 # deal with roi in image
+lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_COLOR)
+# [y1:y2, x1:x2]
+roi = lenaImage[200:395, 206:365]
+cv2.imshow('normal', lenaImage)
+cv2.imshow('ROI', roi)
+
+# resize image
+largerRoi = cv2.resize(roi, None, fx=3, fy=3)
+cv2.imshow('Larger ROI', largerRoi)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# img[273:333, 100:160] = ball
 
 # draw on image
+lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_COLOR)
+
+
+def click_and_crop(event, x, y, flags, param):
+    print(x, y)
+
+
+cv2.namedWindow("image")
+cv2.setMouseCallback("image", click_and_crop)
+
+cv2.rectangle(lenaImage, (206, 200), (365, 395), (0, 255, 0), 1)
+cv2.circle(lenaImage, (264, 271), 20, (255, 0, 0), 1)
+cv2.circle(lenaImage, (337, 272), 20, (255, 0, 0), 1)
+
+cv2.imshow('image', lenaImage)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
 
 # write image to disk
