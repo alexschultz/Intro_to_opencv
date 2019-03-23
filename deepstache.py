@@ -5,7 +5,7 @@ import cv2
 stache = cv2.imread(os.path.join('images', "stache.png"), -1)
 
 
-def show_faces(net, cfd = .60):
+def show_faces(net, cfd=.60):
     cam = cv2.VideoCapture(0)
     while True:
         ret_val, img = cam.read()
@@ -35,6 +35,26 @@ def show_faces(net, cfd = .60):
                               (0, 0, 255), 2)
                 cv2.putText(img, text, (startX, y),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
+
+                try:
+                    box_height = endY - startY
+                    box_width = endX - startX
+
+                    resizedStache = cv2.resize(stache, (box_width, box_height))
+                    # x_offset = y_offset = 0
+
+                    y1, y2 = startY, startY + resizedStache.shape[0]
+                    x1, x2 = startX, startX + resizedStache.shape[1]
+
+                    alpha_s = resizedStache[:, :, 3] / 255.0
+                    alpha_l = 1.0 - alpha_s
+
+                    for c in range(0, 3):
+                        img[y1:y2, x1:x2, c] = (alpha_s * resizedStache[:, :, c] + alpha_l * img[y1:y2, x1:x2, c])
+                except Exception as err:
+                    # If the box extends outside the frame dimensions then it will throw an exception
+                    print("Unexpected error:", err)
+
 
         cv2.imshow('webcam', img)
         if cv2.waitKey(1) == 27:
