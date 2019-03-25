@@ -39,16 +39,32 @@ cv2.destroyAllWindows()
 
 # show individual color channels
 lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_COLOR)
-(channel_b, channel_g, channel_r) = cv2.split(lenaImage)
-# (channel_b, channel_g, channel_r) = (lenaImage[:, :, 0], lenaImage[:, :, 1], lenaImage[:, :, 2])
 
-cv2.imshow('lena blue', channel_b)
-cv2.imshow('lena green', channel_g)
-cv2.imshow('lena red', channel_r)
+b = lenaImage.copy()
+# set green and red channels to 0
+b[:, :, 1] = 0
+b[:, :, 2] = 0
+
+g = lenaImage.copy()
+# set blue and red channels to 0
+g[:, :, 0] = 0
+g[:, :, 2] = 0
+
+r = lenaImage.copy()
+# set blue and green channels to 0
+r[:, :, 0] = 0
+r[:, :, 1] = 0
+
+# RGB - Blue
+cv2.imshow('B-RGB', b)
+
+# RGB - Green
+cv2.imshow('G-RGB', g)
+
+# RGB - Red
+cv2.imshow('R-RGB', r)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-# img = cv2.merge((b,g,r))
-
 
 # histograms and histogram equalization
 cv2.imshow('lena', lenaImage)
@@ -110,14 +126,6 @@ cv2.destroyAllWindows()
 # draw on image
 lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_COLOR)
 
-
-def click_and_crop(event, x, y, flags, param):
-    print(x, y)
-
-
-cv2.namedWindow("image")
-cv2.setMouseCallback("image", click_and_crop)
-
 cv2.rectangle(lenaImage, (206, 200), (365, 395), (0, 255, 0), 1)
 cv2.circle(lenaImage, (264, 271), 20, (255, 0, 0), 1)
 cv2.circle(lenaImage, (337, 272), 20, (255, 0, 0), 1)
@@ -131,3 +139,43 @@ cv2.waitKey(0)
 cv2.destroyAllWindows()
 
 # write image to disk
+cv2.imwrite('intro-to-opencv.png', lenaImage)
+
+# image thresholding
+lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_GRAYSCALE)
+lenaImage = cv2.medianBlur(lenaImage, 5)
+lenaThreshold = cv2.adaptiveThreshold(lenaImage, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+cv2.imshow('Lena Threshold', lenaThreshold)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+# contours
+shapesImage = cv2.imread(os.path.join('images', 'shapes.png'))
+gray = cv2.cvtColor(shapesImage, cv2.COLOR_BGR2GRAY)
+
+ret, thresh = cv2.threshold(gray, 127, 255, 1)
+
+_, contours, h = cv2.findContours(thresh, 1, 2)
+
+for cnt in contours:
+    approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
+    print(len(approx))
+    if len(approx) == 5:
+        print("pentagon")
+        cv2.drawContours(shapesImage, [cnt], 0, 255, 2)
+    elif len(approx) == 3:
+        print("triangle")
+        cv2.drawContours(shapesImage, [cnt], 0, (0, 255, 0), 2)
+    elif len(approx) == 4:
+        print("square")
+        cv2.drawContours(shapesImage, [cnt], 0, (0, 0, 255), 2)
+    elif len(approx) == 9:
+        print("half-circle")
+        cv2.drawContours(shapesImage, [cnt], 0, (255, 255, 0), 2)
+    elif len(approx) > 15:
+        print("circle")
+        cv2.drawContours(shapesImage, [cnt], 0, (0, 255, 255), 2)
+
+cv2.imshow('shapes', shapesImage)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
