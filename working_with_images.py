@@ -155,7 +155,7 @@ gray = cv2.cvtColor(shapesImage, cv2.COLOR_BGR2GRAY)
 
 ret, thresh = cv2.threshold(gray, 127, 255, 1)
 
-_, contours, h = cv2.findContours(thresh, 1, 2)
+contours, h = cv2.findContours(thresh, 1, 2)
 
 for cnt in contours:
     approx = cv2.approxPolyDP(cnt, 0.01 * cv2.arcLength(cnt, True), True)
@@ -177,5 +177,29 @@ for cnt in contours:
         cv2.drawContours(shapesImage, [cnt], 0, (0, 255, 255), 2)
 
 cv2.imshow('shapes', shapesImage)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
+
+
+lenaImage = cv2.imread(os.path.join('images', 'lena.png'), cv2.IMREAD_COLOR)
+cv2.namedWindow('trackbar example')
+
+val1 = 100
+val2 = 100
+def on_trackbar_val1_changed(val):
+    val1 = val
+    edges = cv2.Canny(lenaImage, val1, val2)
+    cv2.imshow('trackbar example', edges)
+
+def on_trackbar_val2_changed(val):
+    val2 = val
+    edges = cv2.Canny(lenaImage, val1, val2)
+    cv2.imshow('trackbar example', edges)
+
+
+
+cv2.createTrackbar('canny val1', 'trackbar example', 0, 200, on_trackbar_val1_changed)
+cv2.createTrackbar('canny val2', 'trackbar example', 0, 200, on_trackbar_val2_changed)
+
 cv2.waitKey(0)
 cv2.destroyAllWindows()
